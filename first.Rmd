@@ -5,6 +5,8 @@ output: html_document
 
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
+knitr::opts_chunk$set(message = TRUE)
+knitr::opts_chunk$set(warning = TRUE)
 library(dplyr)
 library(readr)
 library(ggplot2)
@@ -15,7 +17,7 @@ library(ggplot2)
 Our class has voted their favorite restaurant following the dish they like and the time of last visit.
 
 ```{r include=FALSE}
-restaurant <- read_csv("C://Users//hz9br//Desktop//fav_restaurants.csv")
+restaurant <- read_csv("https://raw.githubusercontent.com/URstats/stat209-s18-IvyZhong/master/fav_restaurants.csv")
 ```
 
 ## **Plotting the Data**
