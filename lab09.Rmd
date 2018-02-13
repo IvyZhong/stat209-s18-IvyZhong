@@ -1,0 +1,104 @@
+---
+title: "Lab 09: Annotating Data Visualizations"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = FALSE)
+knitr::opts_chunk$set(warning = FALSE)
+knitr::opts_chunk$set(message = FALSE)
+knitr::opts_chunk$set(fig.height = 5)
+knitr::opts_chunk$set(fig.width = 8.5)
+knitr::opts_chunk$set(out.width = "100%")
+knitr::opts_chunk$set(dpi = 300)
+
+library(readr)
+library(ggplot2)
+library(dplyr)
+library(viridis)
+theme_set(theme_minimal())
+```
+
+## Pick a dataset
+
+Today you'll have a choice of three datasets to work with. You can choose
+either to investigate Donald Trump's approval rating:
+
+```{r}
+trump <- read_csv("https://statsmaths.github.io/stat_data/trump_approval.csv")
+```
+
+Murder rates across different cities in the US:
+
+```{r}
+murder <- read_csv("https://statsmaths.github.io/stat_data/murder_by_city.csv")
+```
+
+Or the daily close values of the Dow Jones Industrial Average:
+
+```{r}
+djia <- read_csv("https://statsmaths.github.io/stat_data/djia_daily.csv")
+```
+
+Pick a dataset (feel free to delete the others from the Rmd file if you would
+like), and work on the instructions in the next section.
+
+## Instructions
+
+Your goal in this lab is to construct an interesting visualization with the
+data that you choose above. You should make use of several manual annotations
+in an effort to tell a visual story about the dataset. Below, you should
+eventually provide a few sentences describing what you found in the dataset
+and then a single plot illustrating the interesting aspects of the data.
+You should incorporate some external information into your plot.
+
+Note that you will certainly want to create many initial exploratory plots
+before settling on a final one for analysis. This time, make sure you that you
+upload both the Rmd and the html files to GitHub (remember, the final report
+should have just one single visualization).
+
+Also note that you will have to use the format `x = as.Date("2017-01-06")` to
+add annotations to an axis that uses time as a component.
+
+## Analysis Lab08
+
+The graph below shows the correlation of murders in 2014 and the murders in 2015 in the United States. The red point states the highest number of murders happened in 2014 and 2015.
+
+We could conclude that the more murders happened in 2014, the more murders happened in 2015.
+
+
+```{r}
+ggplot(murder, aes(murders_2014, murders_2015)) +
+  geom_point(aes(size = change)) +
+  labs(size = "Change") 
+```
+
+This graph shows the relationship of the changes in 2015 in number of murders and the number of murders in 2014. Some cities has done a good job in reducing the number of murders (shown by points below the x-axis.)
+
+```{r}
+ggplot(murder, aes(murders_2014, change)) +
+  labs(size = "Murders in 2015") +
+  geom_point(aes(size = murders_2015), color= "salmon")
+```
+
+This graph shows the few cities that has a high number of crime, and the city that has the highest number of murders.
+
+```{r}
+ggplot(murder, aes(murders_2014, murders_2015)) +
+  geom_point(aes(size = change), color = "salmon") +
+  labs(size = "Change") +
+  annotate("point", x = 411, y = 478, color = "black") +
+  annotate("text", x = 411, y = 455, label = "Illinois") +
+  annotate("rect", xmin = 200, xmax = 500,
+           ymin = 250, ymax = 500, 
+           fill = "pink", alpha = 0.1) +
+  annotate("text", x = 350, y = 260,
+           label = "Cities have high rate of murders", 
+           size = 5)
+```
+
+
+
+
+
+
