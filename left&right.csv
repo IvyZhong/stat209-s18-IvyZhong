@@ -21,13 +21,13 @@ timestamp,gender,handedness,type_of_class,scienceclass,artshumanitiesclass
 2/11/2018 13:25:49,Female,Right-handed,Half and half,2,3
 2/11/2018 13:36:36,Female,Right-handed,More liberal arts and humanities,1,7
 2/11/2018 13:52:24,Female,Right-handed,Humanities,1,4
-2/11/2018 13:55:22,Female,Right-handed,"more number, science related",5,3
+2/11/2018 13:55:22,Female,Right-handed,Science,5,3
 2/11/2018 13:56:35,Female,Right-handed,liberal arts and humanities,1,6
 2/11/2018 13:59:35,Female,Right-handed,Half and half,3,1
 2/11/2018 14:22:51,Female,Right-handed,Economics,4,1
 2/11/2018 14:35:21,Female,Right-handed,Half and half,5,5
-2/11/2018 14:53:42,Female,Right-handed,sciences and math,6,1
-2/11/2018 15:04:12,Female,Right-handed,Social science,1,3
+2/11/2018 14:53:42,Female,Right-handed,Sciences and Math,6,1
+2/11/2018 15:04:12,Female,Right-handed,Social Science,1,3
 2/11/2018 15:06:02,Male,Left-handed,Science,6,2
 2/11/2018 19:13:26,Female,Right-handed,Architecture,1,12
 2/11/2018 19:13:42,Female,Right-handed,Architecture,1,12
@@ -45,7 +45,7 @@ timestamp,gender,handedness,type_of_class,scienceclass,artshumanitiesclass
 2/11/2018 19:30:31,Female,Right-handed,Accounting,3,1
 2/11/2018 19:34:23,Female,Right-handed,Math,6,2
 2/11/2018 19:34:32,Female,Right-handed,Math,6,2
-2/11/2018 19:35:46,Female,Right-handed,Liberal Arts&Humanity,1,8
+2/11/2018 19:35:46,Female,Right-handed,Liberal Arts,1,8
 2/11/2018 19:38:43,Female,Right-handed,Half and half,2,3
 2/11/2018 19:39:48,Female,Right-handed,Liberal Arts,1,6
 2/11/2018 19:41:04,Female,Right-handed,Half and half,1,4
@@ -55,8 +55,8 @@ timestamp,gender,handedness,type_of_class,scienceclass,artshumanitiesclass
 2/11/2018 19:51:29,Female,Left-handed,Science,5,3
 2/11/2018 19:51:34,Female,Left-handed,Science,5,3
 2/11/2018 19:52:02,Female,Right-handed,Science,5,1
-2/11/2018 19:52:52,Male,Right-handed,Social Science&Humanity,2,1
-2/11/2018 19:52:58,Male,Right-handed,Social Science&Humanity,2,1
+2/11/2018 19:52:52,Male,Right-handed,Humanity,2,1
+2/11/2018 19:52:58,Male,Right-handed,Humanity,2,1
 2/11/2018 19:54:57,Female,Right-handed,Half and half,2,2
 2/11/2018 19:56:35,Male,Right-handed,Business,1,4
 2/11/2018 19:56:40,Female,Right-handed,Liberal Arts,1,7
