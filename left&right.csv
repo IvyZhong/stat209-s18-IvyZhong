@@ -1,4 +1,4 @@
-timestamp,gender,left_or_right_handed,type_of_class,science_number,arts&humanities_number
+timestamp,gender,handedness,type_of_class,scienceclass,artshumanitiesclass
 2/11/2018 12:09:07,Female,Right-handed,Science,6,4
 2/11/2018 12:26:01,Male,Right-handed,Business,6,3
 2/11/2018 12:26:22,Male,Right-handed,Business,1,3
