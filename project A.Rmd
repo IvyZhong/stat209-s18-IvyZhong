@@ -1,0 +1,122 @@
+---
+title: "Is  class preference related to which hand you use to write?"
+author: "Hanyu Zhong"
+output:
+  html_document:
+    df_print: paged
+---
+
+```{r setup, include=FALSE, message=FALSE, warning=FALSE}
+knitr::opts_chunk$set(echo = FALSE)
+knitr::opts_chunk$set(message = FALSE)
+library(readr)
+library(dplyr)
+library(ggplot2)
+library(plotly)
+```
+
+# Is  class preference related to which hand you use to write?
+
+## Overview
+
+This Exploratory Data Analysis focuses on the relationship between handedness and class choosing. One day I coincidentally found out that most of my friends who are left-handed are studying computer science or math. This makes me interested in the correlation between these two phenomenon. However, correlation does not mean causation. I wish to find out if my hypothesis is true or not, but not showing that class choosing is caused by handedness.
+
+All data are collected by google form then transformed to google sheet. Most of the data are from students from Univerisyty of Richmond, and a minority of college stduents from other schools.
+
+
+## Data dictionary
+
+Here is a data dictionary for the left&right dataset:
+
+- **timestamp**: This is the character variable that decribes the time when each individual survey was done. The format must be "MM/DD/YYYY HOUR:MINUTE:SECOND".
+- **gender**: This is a categorical variable that describes participants' gender. Options are Female and Male.
+- **type_of_class**: This is a charactervatiable that shows the majority subject participants are taking within a full academic year. Two or more subjects are connect with "&." 
+- **handedness**: This is a categorical variable that describes which hand the participant uses most often. Options are left-handed, right-handed, and left and right handed.
+- **scienceclass**: This is a numerical variable that describes the number of science and number related classes participants are taking within an academic year. If none, enter 0.
+- **artshumanitiesclass**: This is a numerical variable that describes the number of arts and humanities classes participants are taking with in an academic year. If none, enter 0.
+
+Which can be read in as follows:
+
+```{r}
+leftright <- read_csv("https://raw.githubusercontent.com/URstats/stat209-s18-IvyZhong/master/left%26right.csv")
+leftright
+```
+
+
+## Exploratory Analysis
+
+In 144 samples in the survey conducted by H. ZHONG (Left-handed or Right-handed?, Feb 2, 2018), I compared the relationship between number of college students who is left-handed to right-handed and their class choices by using bar graphs and scatter plots. Firstly, the data shows that there are much more right-handed students among my samples, as shown in Graph 1. Also, in my sample:
+- The number of female and number of male who is left-handed is about the same. 
+- The number of female who's right-handed exceeds the number of male who is right-handed. 
+- There are only male students who are left and right-handed.
+
+Graph 2 shows the correlation between the number of science classes and that of arts and science classes. Almost no correlation can be found in the graph because the points are almost spread out. The point in red is found as an outlier which should not be considered into the correlation calculation. The outlier has the number of classes that exceeds the normal value. 
+
+Graph 3 & 4 shows the diversity of topic students chosen with respect to their handedness. 
+
+Graph 5 & 6 shows the correlation between number of science classes and arts and humanities classes chosen with respect to different handedness. 
+
+```{r}
+Male <- filter(leftright, gender == "Male")
+```
+
+```{r, echo=FALSE}
+ggplot(leftright, aes(handedness)) +
+  geom_bar(aes(fill = gender)) +
+  ggtitle("Graph 1")
+```
+
+```{r}
+Female <- filter(leftright, gender == "Female")
+```
+
+```{r}
+ggplot(leftright, aes(scienceclass, artshumanitiesclass)) +
+  geom_point(size = 1) +
+  geom_text(aes(label = type_of_class, y = artshumanitiesclass - 0.5), 
+            size = 2, color = "black") +
+  annotate("point", x = 1, y = 30, color = "red") +
+  ggtitle("Graph 2")
+```
+
+```{r}
+lefthanded <- filter(leftright, handedness == "Left-handed")
+```
+
+```{r}
+ggplot(lefthanded, aes(type_of_class)) +
+  geom_bar() +
+  ggtitle("Graph 3")
+```
+
+```{r}
+righthanded <- filter(leftright, handedness == "Right-handed")
+```
+
+```{r}
+ggplot(righthanded, aes(type_of_class)) +
+  geom_bar() +
+  ggtitle("Graph 4")
+```
+
+```{r}
+ggplot(lefthanded, aes(scienceclass, artshumanitiesclass)) +
+  geom_point() +
+  ggtitle("Graph 5")
+```
+
+```{r}
+ggplot(righthanded, aes(scienceclass, artshumanitiesclass)) +
+  geom_point() +
+  annotate("point", x = 1, y = 30, color = "red") +
+  ggtitle("Graph 6")
+```
+
+## Conclusion
+
+As shown in the data analysis, there is no correlation between the type of classes students chose and their handedness. 
+The data lack of students from other schools. Therefore the data would not be as representative as data with a wider range. It also lacks of other classes that students are interested in, since students may be interested in one class but have not got a chance to take it in this academic year.
+
+## References
+
+All data are from my own survey "Left-handed or Right-handed?": https://docs.google.com/forms/d/e/1FAIpQLSd2EQy-5xDHaO9QsvzUSwpE9PIb2hIkAmV2_pIqQ9CcAk-YBQ/viewform?usp=sf_link
