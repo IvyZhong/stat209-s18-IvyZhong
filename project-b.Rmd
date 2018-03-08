@@ -1,0 +1,114 @@
+---
+title: "Possible actors that influence the life expectancy of Los Angeles-Long Beach-Anaheim residents"
+author: "Ivy Zhong"
+output:
+  html_document:
+    df_print: paged
+---
+
+```{r setup, include=FALSE, message=FALSE, warning=FALSE}
+knitr::opts_chunk$set(echo = FALSE)
+knitr::opts_chunk$set(message = FALSE)
+knitr::opts_chunk$set(warning = FALSE)
+knitr::opts_chunk$set(fig.height = 5)
+knitr::opts_chunk$set(fig.width = 8.5)
+knitr::opts_chunk$set(out.width = "100%")
+knitr::opts_chunk$set(dpi = 300)
+
+library(readr)
+library(ggplot2)
+library(dplyr)
+library(ggmap)
+library(viridis)
+library(forcats)
+library(ggrepel)
+```
+
+```{r}
+tracts <- read_csv("https://raw.githubusercontent.com/statsmaths/stat_data/gh-pages/acs_tract_data_2016.csv.gz")
+la <- filter(tracts, cbsa == "Los Angeles-Long Beach-Anaheim, CA")
+orange_county <- filter (la, county == "Orange County")
+la_county <- filter (la, county == "Los Angeles County")
+
+```
+
+## Introduction
+
+  Los Angeles, one of the most popular cities in America and even in worldwide, has about 4 million residents estimated. It is a beautiful city with plenty of resources for tourism and job opportunities. In this report, I am going to investigate the area Los Angeles-Long Beach-Anaheim. My particular interest about Los Angeles-Long Beach-Anaheim would be the possible factors that could influence life expectancy of residents in this area. 
+  
+## Income and life expectancy
+  
+  Los Angeles-Long Beach-Anaheim a great subject for us to discuss the correlation between income level and longevity. From the report in *DATA USA*, it has a higher median income level, 62,544 dollars, than the median annual income in the United States which is about 55,775 dollars (A., 2015). Its majority of income distribution is in the lower half of income level (less than 110k). So how would longevity vary with income? 
+
+```{r}
+la$income_25 <- la$income_000_010 + la$income_010_015 + la$income_015_020 + la$income_020_025
+la$income_25_75 <- la$income_025_030 + la$income_030_035 + la$income_035_040 + la$income_040_045 + la$income_045_050 + la$income_050_060 + la$income_060_075
+la$income_75_999 <- la$income_075_100 + la$income_100_125 + la$income_125_150 + la$income_150_200 + la$income_200_999
+
+ggplot(la, aes(income_25, age_60_plus)) +
+  geom_point(color = "steelblue1") +
+  geom_point(aes(x = income_25_75), color = "yellow") +
+  geom_point(aes(x = income_75_999), color = "pink") +
+  geom_smooth(method = "lm", color = "black", se = FALSE, linetype = "dashed", size = 1) +
+  geom_smooth(aes(x = income_25_75), method = "lm", color = "black", se = FALSE, linetype = "dashed", size = 1) +
+  geom_smooth(aes(x = income_75_999), method = "lm", color = "black", se = FALSE, linetype = "dashed", size = 1) +
+  annotate("text", x = 93, y = 32, label = "(Pink) Percentage 75 to 999") +
+  annotate("text", x = 83, y = 5, label = "(Yellow) Percentage 25 to 75") +
+  annotate("text", x = 93, y = -7, label = "(Blue) Percentage 0 to 25") +
+  xlab("Percentage of people in this level of income") +
+  ylab("Percentage of population age above 60")
+```
+
+  In the tracts database, the data of Los Angeles-Long Beach-Anaheim is filtered out. The income level of below 25%, from 25% to 75%, and from 75% to 200% are integrated from all sub-levels and analyzed. In those income levels, the percentage population of age above 60 are particularly be looked at as an indicator of people having a longer life. The graph show a negative correlation between percentage people with the income level below 25% and percentage population above age 60. In other words, as the percentage of population having income that is below 25% goes higher in a sample place, the percentage population of age above 60 goes lower, which means a lower life expectancy. The same negative correlation shows from percentage population with income level 25%-75%, but a positive correlation from income level 75%-200%. The positive correlation shows the more percentage wealthier people (income level 75%-200%) a sample place has, the more people above age 60 lives in the sample place, and vice versa shown by the negative correlation. 
+  
+## Environment and life expectancy
+
+  There are many factors that influence the life expectancy of people. The tracts also reveal that in Los Angeles-Long Beach-Anaheim, the two counties also shows different life expectancies of people who live there. The orange county is generally lower part of the map, and the Los Angeles County is the upper part of the map. Orange County has slightly more percentage of people age above 60 than Los Angeles County has, which can be shown by some dots in the orange county that have lighter colors (means a higher percentage of people age above 60). This indicates that there might be some environmental issues causing this life expectancy disparity.
+
+```{r}
+la <- filter(tracts, cbsa == "Los Angeles-Long Beach-Anaheim, CA")
+
+qmplot(lon, lat, data = la, geom = "point") +
+  geom_point(aes(size = population, color = age_60_plus), alpha = 0.5) +
+  scale_color_viridis()
+```
+  
+  Through some web research, I found out that orange county generally has a "laid-back approach to work," compared to Los Angeles County that has is more "career-driven"(Smith, 2016). The pressure from work could cause mental health issue and further contributes to a shorter life expectancy. This could be why the orange county has a higher percentage of population age above 60. 
+  
+  Another interesting environmental factor that could cause the longevity difference between the two counties is that LA county has more city pollution that harms residents' health(Smith, 2016). LA county generally has more smog, dirty streets, and exhaust, compared to orange county, a suburb area, which has fresh air and natural environment. It is not hard to believe why orange has a slightly longer longevity.
+  
+## Other factors
+
+  Another factor people could think of is how often people exercise, or as a more direct and common measurement, how would they choose to commute. The relationship between the percentage of people choosing to walk and percentage of people age above 60 shows a negative correlation. That is, in a sample place that has the majority of people walk to work usually tends to have a lower number of people age above 60. In the left of the graph, the cut-off shows places that 0% people walk to work. The red dots are all extreme data in the tracts.
+
+```{r}
+anomalies <- filter(la, commute_walk == 0)
+
+ggplot(la, aes(commute_walk, age_60_plus)) +
+  geom_point(color = "grey58") +
+  geom_point(color = "firebrick3", data = anomalies) +
+  scale_x_log10() +
+  scale_y_log10() +
+  geom_smooth(method = "lm", color = "firebrick3", se = FALSE, linetype = "dashed", size = 1) +
+  xlab("Percentage population go to work by walk (log)") +
+  ylab("Percentage of population age above 60 (log)")
+```
+
+  This may somehow disagree with common sense, but by just looking at how people commute does not explain why people in that region have a certain longevity. It is actually because of the high percentage of people age above 60, most people choose to drive or use public transportation to go to work. Or it is just simply because LA is a big place. People don't usually work in a distance that is reachable by walk.
+
+## Conclusion
+
+I summarize the factors in this report: 
+
+1. The higher the percentage of people receiving higher income level in a place, the more people is at the age of 60. 
+2. The better the environment, the higher the percentage of people age above 60 living in this area
+3. The commute method does not affect the life expectancy
+
+## References
+
+A. (2015). Los Angeles-Long Beach-Anaheim, CA Metro Area. Retrieved from 
+  https://datausa.io/profile/geo/los-angeles-long-beach-anaheim-ca-metro-area/
+
+Smith, P. (2016, December 17). 10 differences between Los Angeles and Orange County. Retrieved 
+  from https://matadornetwork.com/life/10-differences-los-angeles-orange-county/
+
