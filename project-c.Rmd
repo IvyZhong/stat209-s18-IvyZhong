@@ -1,0 +1,97 @@
+---
+title: "A little guidance for finding a great chocolate"
+author: "Ivy Zhong"
+output: html_document
+---
+
+```{r setup, include=FALSE, message=FALSE, warning=FALSE}
+knitr::opts_chunk$set(echo = FALSE)
+knitr::opts_chunk$set(message = FALSE)
+knitr::opts_chunk$set(warning = FALSE)
+knitr::opts_chunk$set(out.width = "100%")
+knitr::opts_chunk$set(dpi = 300)
+
+library(readr)
+library(ggplot2)
+library(dplyr)
+library(ggmap)
+library(viridis)
+library(forcats)
+library(smodels)
+
+chocolate <- read_csv("https://raw.githubusercontent.com/URstats/stat209-s18-IvyZhong/master/project-c.csv")
+```
+
+## Introduction
+This statistical report helps you to find delicious chocolates in a supermarket by analyzing the source (where the chocolate is from), the quality, and the appearance variable. 
+
+According to common sense, I hypothesize that Europe has statistically significant higher appearance and quality scores than those of others. And I also hypothesize the relationship between appearance and quality score will be positive and the relationship is statistically significant, which means, the higher the appearance, the higher the quality.
+
+The dataset uses the following fields:
+- name: a character variable indicating the name of the chocolate
+- source: a categorical variable describing the continent where the brand of the chocolate is from. The categories are Europe and Others.
+- appearance: a numeric variable describing the appearance score of each chocolate with a full score of 5.
+- quality: a numeric variable describing the quality score of each chocolate with a full score of 20.
+
+## Methods
+
+I searched on the internet for comments and rankings of different chocolates and also recorded the two numeric variable, the appearance, and the quality score, of each chocolate, and a categorical variable, the source (where the chocolate is from) variable of each chocolate. 
+
+I input the dataset into RStudio and analyze the data using three models. The first and the second model shows the estimated mean for the appearance score and quality score for each chocolate. The confidence level for both models is 0.95, meaning the mean has 0.95 chance lying in between the 97.5% and 2.5% value range. The baselines for these two model are both the mean for Europe appearance and quality scores.
+
+The third model draws a linear regression between the two variables: quality score and the appearance score. The intercept for this model the y-intercept of the linear regression line.
+
+## Results
+
+The intercept of the first model and graph is the appearance score of Europe chocolates and the estimation shows that the appearance score of chocolates from other places is not significantly lower than that of Europe chocolates. The confidence levels contain 0 so we think the difference is not statistically important, although we can see the mean value for other countries is lower.
+```{r}
+model_app <- lm_basic(appearance ~ 1 + source, data = chocolate)
+reg_table(model_app, level = 0.95)
+```
+
+```{r}
+ggplot(chocolate, aes(source, appearance)) +
+  geom_boxplot()
+```
+
+
+The second model and graph show that the quality score of chocolates from Europe is not significantly higher than that of chocolate from other places, although the mean value of Europe chocolates is higher.
+
+```{r}
+model_qua <- lm_basic(quality ~ 1 + source, data = chocolate)
+reg_table(model_qua, level = 0.95)
+```
+
+```{r}
+ggplot(chocolate, aes(source, quality)) +
+  geom_boxplot()
+```
+
+The third model and graph show that the relationship between the appearance and the quality score of chocolates is a statistically significant positive linear relationship (0.04265 > 0, and confidence level both positive).
+
+```{r}
+model_appqua <- lm_basic(appearance ~ 1 + quality, data = chocolate)
+reg_table(model_appqua, level = 0.95)
+```
+
+The graph depicts the positive relationship between the appearance and the quality score variables.
+
+```{r}
+qplot(appearance, quality, data = chocolate) + 
+  geom_smooth(method = "lm", color = "palevioletred1")
+```
+
+
+## Conclusions
+
+According to my first model, Europe chocolates have a higher mean value of appearance score than other chocolates' appearance score. However, the confidence level contains a 0. Therefore, the difference is not significant, and my first hypothesis failed.
+
+In my second model, the Europe chocolates have a higher mean value of quality score than other chocolates' quality score. However, the confidence level contains a 0. Therefore, the difference is not significant, and my second hypothesis also failed.
+
+In the third model, the slope of the linear regression line is 0.04265, stating a positive relationship between the two variables. Also, the confidence levels are both positive. Therefore, the positive linear regression is statistically significant.
+
+The report states that choosing chocolate according to where it comes from does not necessarily helps you to find the best chocolate. However, choosing chocolate according to appearance might help you to identify which chocolate has the best quality. Also, since there is still some difference between the mean values of both scores, there is possibly not enough data to draw the conclusion.
+
+## References
+
+C-spot, T. (n.d.). C-spot. Retrieved from http://www.c-spot.com/chocolate-census/bars/
