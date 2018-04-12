@@ -1,12 +1,12 @@
 ---
-title: "Lab 24: Chicago Crime Data I"
+title: "Lab 24: Chicago Crime Data II"
 output: html_document
 ---
 
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = FALSE)
 knitr::opts_chunk$set(warning = FALSE)
-knitr::opts_chunk$set(message = TRUE)
+knitr::opts_chunk$set(message = FALSE)
 knitr::opts_chunk$set(fig.height = 5)
 knitr::opts_chunk$set(fig.width = 8.5)
 knitr::opts_chunk$set(out.width = "100%")
@@ -20,6 +20,7 @@ library(forcats)
 library(smodels)
 theme_set(theme_minimal())
 ```
+
 
 ## Instructions
 
@@ -73,169 +74,95 @@ ca <- read_csv("https://statsmaths.github.io/stat_data/chicago_meta.csv")
 - `perc_20_units`: percentage of residential buildings with 20 or more units
 
 
-It is difficult to do much of anything directly with the raw data. We
-need to utilize the group_summarize function to get somewhere interesting.
-Before doing that on the whole dataset, let's make sure that we understand
-exactly what is going on by using the mean() and sum() functions directly.
-Take the mean of arrest_flag for the whole dataset:
-
-```{r}
-mean(crimes$arrest_flag)
-```
-
-Describe what this means in words.
-
-**Answer**: The mean of arrests of crimes. The mean is 0.172482 meaning that the majority of crimes were not arrested.
-
-Now, take the mean of the theft variable over the entire dataset:
-
-```{r}
-mean(crimes$theft)
-```
-
-Describe what this means in words.
-
-**Answer**: The mean is 0.2751659 meaning that the majority of crimes were not theft.
-
-Take the sum of the theft variable:
-
-```{r}
-sum(crimes$theft)
-```
-
-Describe what this means in words.
-
-**Answer**: There were 38816 theft crimes happened in the city of Chicago
-
-Take the dataset `ca` and calculate the sum of the variable `num_households`:
-
-```{r}
-sum(ca$num_households)
-```
-
-Divide the sum of the theft variable by the sum of the number of
-households variable and multiply by 1000.
-
-```{r}
-sum(crimes$theft)*1000/sum(ca$num_households)
-```
-
-Describe what this means in words.
-
-**Answer**: 36.55238 theft could happen per 1000 households.
-
-Use the filter function to construct a dataset `temp` consisting only of
-those rows in `crimes` that come from area_number 23. This is the area
-named Humboldt Park.
-
-```{r}
-temp <- filter(crimes, area_number == 23)
-```
-
-Take the mean of the variable arrests on the data `temp`.
-
-```{r}
-mean(temp$arrest_flag)
-```
-
-Is this smaller, larger, or about the same as the mean of the arrest flag
-over the entire dataset? Can we safely compare these measurements? If so
-describe the relationship in words.
-
-**Answer**: The mean of number of arrests for the city of Chicago is 0.172482, while the mean of number of arrests of area Humboldt Park is 0.2569792. The mean is higher.
-
-Take the mean of the variable `theft` on the data `temp`.
-```{r}
-mean(temp$theft)
-mean(crimes$theft)
-```
-
-Is this smaller, larger, or about the same as the mean of the theft flag
-over the entire dataset? Can we safely compare these measurements? If so
-describe the relationship in words.
-
-**Answer**:The value is smaller.
-
-Manually look up the number of households in area 23, Humboldt Park, by
-looking at the dataset `ca` in the data viewer. Take the sum of the number
-of thefts in temp, divide this by the number of households in Humboldt Park,
-and multiply by 1000:
-
-```{r}
-sum(temp$theft)*1000/17830
-```
-
-Is this smaller, larger, or about the same as the same measurement over the
-over the entire dataset? Can we safely compare these measurements? If so
-describe the relationship in words.
-
-**Answer**: No. We can't compare the numbers since the area isn't the same.
-
-You have the tools to get the number of households in Humboldt Park
-entirely using R code. Specifically, filter `ca` to only include area 23
-and then pull off `num_households` with the `$` operator. Try this here:
-
-```{r}
-ca23 <- filter(ca, area_number == 23)
-ca23$num_households
-```
-
-Now that we have an idea of what it means to take means and sums over
-this dataset, use `group_summarize` to summarize `crimes` at the community
-area level. Save the result as `crimes_ca`:
+As before, it will be useful to group summarize the dataset and join the
+metadata. Do that here to construct the dataset `crimes_ca`:
 
 ```{r}
 crimes_ca <- group_summarize(crimes, area_number)
-```
-
-We want to combine the datasets `crimes_ca` and `ca`. To do this we use
-a new function `left_join`, as follows:
-
-```{r}
 crimes_ca <- left_join(crimes_ca, ca)
 ```
 
-What variable is R using the match these datasets up?
+### Example
 
-**Answer**: area_name
-
-By default, R will use any commonly named variables to match the datasets
-up. If we need it, I will show you how to modify this behavior later.
-
-Construct a variable `theft_rate` equal to the number of thefts in each
-community area, divided by the number of households and multiplied by 1000.
+Last time, I said that it may be useful to summarize the dataset it in
+a different way. This will be a powerful tool in Project D. To test your
+knowledge of what this means, look at this dataset and plot:
 
 ```{r}
-crimes_ca$theft_rate <- crimes_ca$theft_sum*1000/crimes_ca$num_households
+crimes_time_ca <- group_summarize(crimes, area_number, night_flag)
+crimes_time_ca <- left_join(crimes_time_ca, ca, by = "area_number")
+crimes_time_ca$burglary_rate <- crimes_time_ca$burglary_sum / crimes_time_ca$num_households * 1000
+
+ggplot(crimes_time_ca, aes(median_income, burglary_rate)) +
+  geom_point(aes(color = factor(night_flag))) +
+  geom_smooth(aes(color = factor(night_flag)), method = "lm") +
+  scale_color_viridis(discrete = TRUE)
 ```
 
-Draw a scatter plot with median income on the x-axis and theft rate on
-the y-axis.
+How many observations are there in the data? What does one row represent?
+How do you interpret the plot? Do the two slopes differ; what does this
+mean in practical terms? 
+
+There are 141064 obversations in the dataset crimes. One row represents a crime.
+The plot shows, whether the crime happens during night or day, the higher the income, the lower the number of burglary. Since the line for day time is always lower than the line for night time, the plot shows that there are more burglary happened during night time. And the confidence level for night time data does not overlap the day time confidence level for most of the income, there is a statistically significant difference present.
+The slope difference between the two categorical variables means the higher the income, the faster the number of burglary decreased.  
+
+### Prompts
+
+Address one of the following prompts. Your end goal should be to produce
+a data visualization (make sure to include labels) and a 1-2 sentence thesis
+statement. Straight from Wikipedia, a thesis statement: "offers a concise
+summary of the main point or claim of the essay, research paper, ect."
+Note, these questions are jumping off points. You can deviate or extend
+from them if something related strikes your interest.
+
+1. How is the rate of battery crimes (that is the number of crimes per
+household) effected by how central a neighborhood is to the city of Chicago?
+Centrality can be measured by several variables, including the percentage
+of people who walk to work, number of households living in buildings with
+20+ units, or total commute time. You may want to differentiate between
+crimes at night and those during the day.
+
+2. What proportion of narcotics violations result in an arrest by neighborhood?
+Do any features of a neighborhood seem to effect this rate? If you see any
+outliers try to document and explain these.
+
+3. What is the relationship between the overall arrest rate and the
+crime rate in a given neighborhood? Does income effect or correlate
+with these in any expected or unexpected ways?
+
+4. How does the relationship between income and the rate of burglaries
+change between day and nighttime? You may want to highlight 1-2 particular
+neighborhoods to make your point.
+
+5. Robbery and theft are similar crimes, the difference being that robbery
+involves taking something by force whereas theft is simply the taking of
+another's property. Considering only crimes at night, how does the ratio
+of robberies to the number robberies and thefts relate to demographics
+in each neighborhood. Try to find a particularly interesting or predictive
+demographic.
+
+6. There are 6 community areas where over 47% of households have
+children. How does the relationship between the number of crimes
+that occur and night and the arrest rate in each neighborhood compare
+between these 9 areas and the others?
+
+7. How does the relationship between income and the rate of assault
+change between day and nighttime? You may want to highlight any particularly
+interesting outliers.
+
+### Exploratory Analysis
+
+Write you exploratory analysis here:
 
 ```{r}
-ggplot(crimes_ca, aes(median_income, theft_rate)) +
-  geom_point()
-```
+crimes_nar <- filter(crimes, narcotics == 1)
+crimes_narsum <- group_summarize(crimes_nar, area_number)
+crimes_narsumleft <- left_join(crimes_narsum, ca, by = "area_number")
 
-Describe the general pattern and any outliers.
-
-**Answer**: The higher the median income, the lower the theft rate.
-
-Modify the previous plot so that the points are labeled with the area
-name:
-
-```{r}
-ggplot(crimes_ca, aes(median_income, theft_rate)) +
+ggplot(crimes_narsumleft, aes(median_income, arrest_flag_mean)) +
   geom_point() +
-  geom_text(aes(label = area_name), size = 5)
+  geom_smooth(method = "lm")
 ```
 
-What is the name of the outlier?
-
-**Answer**: Loop
-
-(Critical Thinking) Look up the neighborhood that is the outlier on
-Wikipedia. Give an explanation for why this neighborhood has a high rate
-of theft per household. Hint: There are two distinct reasons.
-
-**Answer**: It is a commercial place, and a lot of people go there and leave, so a higher rate of theft coming in.
+Almost all of the narcotics are arrested in all neighborhoods.
